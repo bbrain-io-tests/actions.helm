@@ -34,6 +34,10 @@ inputs:
   extra_opts:
     required: false
     description: Extra options to pass to helm invocation (space delimited)
+  dry_run:
+    required: false
+    description: Don't apply the chart, only show diff
+    default: "false"
 
 runs:
   using: "composite"
@@ -60,9 +64,10 @@ runs:
         namespace: "${{ inputs.namespace }}"
         create_namespace: "${{ inputs.create_namespace }}"
         version: "${{ inputs.version }}"
-        values_files: "${{ inputs.values_files }}"
-        values: "${{ inputs.values }}"
+        values_files: "${{ fromJSON(inputs.values_files) }}"
+        values: "${{ fromJSON(inputs.values) }}"
         extra_opts: "${{ inputs.extra_opts }}"
+        dry_run: "${{ inputs.dry_run }}"
         HELM_DIFF_IGNORE_UNKNOWN_FLAGS: "true"
         HELM_PLUGINS: "/root/.local/share/helm/plugins"
       shell: bash
@@ -89,9 +94,14 @@ runs:
         opts+=("--install")
 
         # First try a diff and exit if nothing changed
+        echo helm diff upgrade "${opts[@]}" --detailed-exitcode
         helm diff upgrade "${opts[@]}" --detailed-exitcode && {
           echo "Nothing to upgrade for release ${release_name} in namespace ${namespace}"
           echo "Skipping"
           exit 0
         }
-        helm upgrade "${opts[@]}"
+
+        echo helm upgrade "${opts[@]}"
+        if [ "$dry_run" = "false" ]; then
+          helm upgrade "${opts[@]}"
+        fi
