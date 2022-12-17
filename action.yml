@@ -1,0 +1,92 @@
+name: "Helm"
+description: "Installs a helm chart"
+inputs:
+  repo:
+    required: false
+    description: A helm repository to add
+  repo_name:
+    required: false
+    description: The helm repository name to add
+  chart_name:
+    required: true
+    description: The chart to install (name or path)
+  release_name:
+    required: true
+    description: The chart release name
+  namespace:
+    required: false
+    description: The namespace where to install the chart
+  create_namespace:
+    required: false
+    default: "false"
+    description: Create the namespace if it doesn't exist
+  version:
+    required: false
+    description: The chart version to install
+  values_files:
+    required: false
+    description: >-
+      Values files to use when installing the chart. 
+      Can be a single path or multiple newline delimited paths.
+  values:
+    required: false
+    description: YAML values file contents to use when installing the chart
+  extra_opts:
+    required: false
+    description: Extra options to pass to helm invocation (space delimited)
+
+runs:
+  using: "composite"
+  steps:
+    - name: Add repo
+      env:
+        repo: ${{ inputs.repo }}
+        repo_name: ${{ inputs.repo_name }}
+      shell: bash
+      run: |
+        if [ -n "$repo" ] && [ -z "$repo_name" ]; then
+          echo 'You must specify a repo name'
+          exit 1
+        fi
+
+        helm repo add "$repo_name" "$repo"
+        helm repo update
+      if: "${{ inputs.repo != '' }}"
+
+    - name: Install chart
+      env:
+        chart_name: ${{ inputs.chart_name }}
+        release_name: ${{ inputs.release_name }}
+        namespace: ${{ inputs.namesapce }}
+        create_namespace: ${{ inputs.create_namespace }}
+        version: ${{ inputs.version }}
+        values_files: ${{ inputs.values }}
+        values: ${{ inputs.values }}
+        extra_opts: ${{ inputs.extra_opts }}
+        HELM_DIFF_IGNORE_UNKNOWN_FLAGS: "true"
+      shell: bash
+      run: |
+        opts=("$chart_name" "$release_name")
+
+        [ "$create_namespace" = "true" ] && opts+=("--create-namespace")
+        [ -n "$namespace" ] && opts+=("--namespace" "$namespace")
+        [ -n "$version" ] && opts+=("--version" "$version")
+        [ -n "$extra_opts" ] && opts+=("$extra_opts")
+
+        if [ -n "$values_files" ]; then
+          mapfile -t values_paths <<< $values_files
+          for p in $values_paths; do
+            opts+=("--values" "$p")
+          done
+        fi
+
+        if [ -n "$values" ]; then
+          printf "%s" "$values" > "${chart_name}_${release_name}_values.yaml"
+          opts+=("--values" "${chart_name}_${release_name}_values.yaml")
+        fi
+
+        opts+=("--install")
+
+        # First try a diff and exit if nothing changed
+        helm diff upgrade "${opts[@]}" --detailed-exitcode && exit 0
+        helm upgrade "${opts[@]}"
