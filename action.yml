@@ -64,7 +64,7 @@ runs:
         values: ${{ inputs.values }}
         extra_opts: ${{ inputs.extra_opts }}
         HELM_DIFF_IGNORE_UNKNOWN_FLAGS: "true"
-        HELM_PLUGINS: "/root/.cache/helm/plugins"
+        HELM_PLUGINS: "/root/.local/share/helm/plugins"
       shell: bash
       run: |
         opts=("$release_name" "$chart_name")
