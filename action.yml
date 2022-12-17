@@ -80,7 +80,7 @@ runs:
         [ -n "$extra_opts" ] && opts+=("$extra_opts")
 
         if [ -n "$values_files" ]; then
-          mapfile -t values_paths <<< $values_files
+          mapfile -t values_paths <<< "$values_files"
           for p in $values_paths; do
             opts+=("--values" "$p")
           done
