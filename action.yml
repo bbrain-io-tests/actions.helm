@@ -57,7 +57,7 @@ runs:
       env:
         chart_name: ${{ inputs.chart_name }}
         release_name: ${{ inputs.release_name }}
-        namespace: ${{ inputs.namesapce }}
+        namespace: ${{ inputs.namespace }}
         create_namespace: ${{ inputs.create_namespace }}
         version: ${{ inputs.version }}
         values_files: ${{ inputs.values }}
