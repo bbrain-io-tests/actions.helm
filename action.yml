@@ -66,7 +66,7 @@ runs:
         HELM_DIFF_IGNORE_UNKNOWN_FLAGS: "true"
       shell: bash
       run: |
-        opts=("$chart_name" "$release_name")
+        opts=("$release_name" "$chart_name")
 
         [ "$create_namespace" = "true" ] && opts+=("--create-namespace")
         [ -n "$namespace" ] && opts+=("--namespace" "$namespace")
