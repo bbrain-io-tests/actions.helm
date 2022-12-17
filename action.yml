@@ -82,8 +82,8 @@ runs:
         fi
 
         if [ -n "$values" ]; then
-          printf "%s" "$values" > "${chart_name}_${release_name}_values.yaml"
-          opts+=("--values" "${chart_name}_${release_name}_values.yaml")
+          printf "%s" "$values" > "$RUNNER_TEMP/${release_name}_values.yaml"
+          opts+=("--values" "$RUNNER_TEMP/${release_name}_values.yaml")
         fi
 
         opts+=("--install")
