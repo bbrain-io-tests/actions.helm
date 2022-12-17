@@ -92,6 +92,7 @@ runs:
 
         if [ -n "$values" ]; then
           printf "%s" "$values" > "$RUNNER_TEMP/${release_name}_values.yaml"
+          cat "$RUNNER_TEMP/${release_name}_values.yaml"
           opts+=("--values" "$RUNNER_TEMP/${release_name}_values.yaml")
         fi
 
