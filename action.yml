@@ -82,6 +82,10 @@ runs:
         if [ -n "$values_files" ]; then
           mapfile -t values_paths <<< "$values_files"
           for p in "${values_paths[@]}"; do
+            [ ! -f "$p" ] && {
+              echo "Values file not found: $p"
+              continue
+            }
             opts+=("--values" "$p")
           done
         fi
