@@ -55,14 +55,14 @@ runs:
 
     - name: Install chart
       env:
-        chart_name: ${{ inputs.chart_name }}
-        release_name: ${{ inputs.release_name }}
-        namespace: ${{ inputs.namespace }}
-        create_namespace: ${{ inputs.create_namespace }}
-        version: ${{ inputs.version }}
-        values_files: ${{ inputs.values }}
-        values: ${{ inputs.values }}
-        extra_opts: ${{ inputs.extra_opts }}
+        chart_name: "${{ inputs.chart_name }}"
+        release_name: "${{ inputs.release_name }}"
+        namespace: "${{ inputs.namespace }}"
+        create_namespace: "${{ inputs.create_namespace }}"
+        version: "${{ inputs.version }}"
+        values_files: "${{ inputs.values }}"
+        values: "${{ inputs.values }}"
+        extra_opts: "${{ inputs.extra_opts }}"
         HELM_DIFF_IGNORE_UNKNOWN_FLAGS: "true"
         HELM_PLUGINS: "/root/.local/share/helm/plugins"
       shell: bash
