@@ -89,5 +89,9 @@ runs:
         opts+=("--install")
 
         # First try a diff and exit if nothing changed
-        helm diff upgrade "${opts[@]}" --detailed-exitcode && exit 0
+        helm diff upgrade "${opts[@]}" --detailed-exitcode && {
+          echo "Nothing to upgrade for release ${release_name} in namespace ${namespace}"
+          echo "Skipping"
+          exit 0
+        }
         helm upgrade "${opts[@]}"
